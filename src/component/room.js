@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Signin from './Signin'
+import Swal from 'sweetalert2';
 export default function Room() {
   const [material, setMaterial] = useState([]);
   const storageRepairType = sessionStorage.getItem('repairType');
@@ -36,9 +37,21 @@ export default function Room() {
     axios.put(`http://localhost:3001/moveroom/${durablearticles_Id}`, { durablearticles_Id, name, type, room_Id})
       .then((response) => {
         console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: 'แก้ไขข้อมูลสำเร็จ',
+          showConfirmButton: false,
+          timer: 1500
+        })
       })
       .catch((error) => {
         console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถแก้ไขข้อมูลได้',
+          confirmButtonColor: '#dc3545'
+        })
       });
   };
 

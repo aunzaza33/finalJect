@@ -152,14 +152,14 @@ function App() {
 
       <div class="content">
         <Routes>
-          <Route path='/home2' element={<Home2 />}></Route>
-          <Route path='/materialadd' element={<Materialadd />}></Route>
-          <Route path='/materialshow' element={<Materialshow />}></Route>
-          <Route path='/materialedit/:material_Id' element={<Materialedit />}></Route>
-          <Route path='/durablearticlesadd' element={<Durablearticlesadd />}></Route>
-          <Route path='/durablearticlesshow' element={<Durablearticlesshow />}></Route>
-          <Route path='/durablearticlesedit/:durablearticles_Id' element={<Durablearticlesedit />}></Route>
-          <Route path='/moveroom' element={<Moveroom />}></Route>
+          <Route path='home2' element={<Home2 />}></Route>
+          <Route path='materialadd' element={<Materialadd />}></Route>
+          <Route path='materialshow' element={<Materialshow />}></Route>
+          <Route path='materialedit/:material_Id' element={<Materialedit />}></Route>
+          <Route path='durablearticlesadd' element={<Durablearticlesadd />}></Route>
+          <Route path='durablearticlesshow' element={<Durablearticlesshow />}></Route>
+          <Route path='durablearticlesedit/:durablearticles_Id' element={<Durablearticlesedit />}></Route>
+          <Route path='moveroom' element={<Moveroom />}></Route>
 
           <Route path='/mlist' element={<Mlist />}></Route>
           <Route path='/mlist2' element={<Mlist2 />}></Route>

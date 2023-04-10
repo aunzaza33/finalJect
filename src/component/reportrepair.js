@@ -2,7 +2,7 @@ import Axios from 'axios'
 import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-
+import './reportrepair.css';
 function Reportrepair() {
 
   const [orderm, setOrderm] = useState([]);
@@ -26,12 +26,15 @@ function Reportrepair() {
   );
 
   return (
+    
     <div className="columns mt-5 is-centered">
+      
       <div className="column is-half">
         <div className="field">
           <div className="control">
+          
             <input
-              className="input"
+              className="input2"
               type="text"
               placeholder="ค้นหาครุภัณฑ์"
               value={searchTerm}
@@ -39,7 +42,7 @@ function Reportrepair() {
             />
           </div>
         </div>
-
+        <div className='report'>
         <table class="table">
           <thead>
             <tr>
@@ -71,6 +74,7 @@ function Reportrepair() {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 };
