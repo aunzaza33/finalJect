@@ -28,23 +28,12 @@ const Dcart = () => {
     const navigate = useNavigate();
     const { durablearticles_Id } = useParams();
 
-    const newstatus = "เบิกไม่ได้";
+    const newstatus = "ยืมไม่ได้";
 
     const getDurablearticlesById = async () => {
         const response = await Axios.get(`http://localhost:3001/getdurablearticles/${durablearticles_Id}`);
         console.log(response);
         setDurablearticles_name(response.data[0].durablearticles_name);
-        setDurablearticles_brand(response.data[0].durablearticles_brand);
-        setDurablearticles_unit(response.data[0].durablearticles_unit);
-        setDurablearticles_price(response.data[0].durablearticles_price);
-        setDurablearticles_order_date(response.data[0].durablearticles_order_date);
-        setDurablearticles_delivery_date(response.data[0].durablearticles_delivery_date);
-        setDurablearticles_repair_date(response.data[0].durablearticles_repair_date);
-        setDurablearticles_finish_date(response.data[0].durablearticles_finish_date);
-        setType_durablearticles_Id(response.data[0].type_durablearticles_Id);
-        setCompany_Id(response.data[0].company_Id);
-        setRoom_Id(response.data[0].room_Id);
-        setDurablearticles_status(response.data[0].durablearticles_status);
     };
 
     useEffect(() => {
@@ -60,6 +49,7 @@ const Dcart = () => {
                 order_durablearticles_date,
                 username,
                 durablearticles_Id,
+                durablearticles_name,
             });
             await Axios.put(`http://localhost:3001/statusdurablearticles/${durablearticles_Id}`, {
                 durablearticles_Id,
@@ -70,6 +60,14 @@ const Dcart = () => {
             console.log(error);
         }
     };
+
+    new Date(order_durablearticles_date).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
+    const Dates = new Date(order_durablearticles_date);
+    const DateStr = `${Dates.getDate()}/${Dates.getMonth()+1}/${Dates.getFullYear()}`;
 
     return (
         <div className="Appcontainer">
@@ -85,7 +83,7 @@ const Dcart = () => {
                     </div>
 
                     <div className="field1">
-                        <label className="label">เบิกไปใช้ที่ไหน :</label>
+                        <label className="label">ยืมไปใช้ที่ไหน :</label>
                         <div className="control">
                             <input
                                 type="text"
@@ -97,19 +95,18 @@ const Dcart = () => {
                         </div>
                     </div>
                     <div className="field1">
-                        <label className="label">วันที่เบิก :</label>
+                        <label className="label">วันที่ยืม :</label>
                         <div className="control">
                             <input
-                                type="date"
                                 className="input"
-                                value={order_durablearticles_date}
+                                value={DateStr}
                                 onChange={(e) => setOrder_durablearticles_date(e.target.value)}
                                 placeholder=""
                             />
                         </div>
                     </div>
                     <div className="field1">
-                        <label className="label">ชื่อผู้เบิก :</label>
+                        <label className="label">ชื่อผู้ยืม :</label>
                         <div className="control">
                             <input
                                 type="text"
@@ -123,7 +120,7 @@ const Dcart = () => {
                     <br />
                     <div className="field">
                         <button type="submit" class="btn btn-success">
-                            เบิก
+                            ยืม
                         </button>
                     </div>
                 </form>

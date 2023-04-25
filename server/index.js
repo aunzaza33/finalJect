@@ -5,9 +5,10 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
+const fetch = require("node-fetch");
+const request = require('request');
 
-
-
+const linetoken='5f0P99eEoHGAFWIRRXEauI4TowxcMu9jAkioRczOXfu';
 app.use(cors());
 app.use(express.json());
 
@@ -16,6 +17,38 @@ const db = mysql.createConnection({
   host: "localhost",
   password: "",
   database: "project",
+});
+
+//รูปซ่อม
+app.get('/api/image/:imageName', (req, res) => {
+  const imageName = req.params.imageName;
+  res.sendFile(path.join(__dirname, `Picture/${imageName}`));
+});
+
+//company
+app.get("/getcompany", (req, res) => {
+  db.query("SELECT * FROM company", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+})
+
+app.post('/createcompany', (req, res) => {
+  const company_Id = req.body.company_Id;
+  const company_name = req.body.company_name;
+  db.query(
+    "INSERT INTO company (company_Id, company_name) VALUES(?,?)",
+    [company_Id, company_name],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Values inserted");
+      }
+    });
 });
 
 //test
@@ -46,6 +79,21 @@ app.put('/stockmaterial/:material_Id', (req, res) => {
   db.query(
     "UPDATE material SET material_remaining = ? WHERE material_Id = ?",
     [material_remaining, material_Id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    });
+});
+
+app.put('/mstatus/:material_Id', (req, res) => {
+  const material_Id = req.body.material_Id;
+  const material_status = req.body.material_status;
+  db.query(
+    "UPDATE material SET material_status = ? WHERE material_Id = ?",
+    [material_status, material_Id],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -150,7 +198,7 @@ app.delete("/deletematerial/:material_Id", (req, res) => {
 
 app.get("/getmaterial/:material_Id", (req, res) => {
   const material_Id = req.params.material_Id;
-  db.query("SELECT * FROM material WHERE material_Id = ?", material_Id, (err, result) => {
+  db.query("SELECT * FROM material INNER JOIN type_material ON material.type_material_Id = type_material.type_material_Id INNER JOIN company ON material.company_Id = company.company_Id WHERE material_Id = ?", material_Id, (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -169,6 +217,24 @@ app.post('/stock_material', (req, res) => {
   db.query(
     "INSERT INTO stock_material (stock_material_Id, stock_material_add, stock_material_date, username, material_Id) VALUES(?,?,?,?,?)",
     [stock_material_Id, stock_material_add, stock_material_date, username, material_Id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Values inserted");
+      }
+    });
+});
+
+app.post('/stock_material2', (req, res) => {
+  const stock_material_Id = req.body.stock_material_Id;
+  const stock_material_delete = req.body.stock_material_delete;
+  const stock_material_date = req.body.stock_material_date;
+  const material_Id = req.body.material_Id;
+  const username = req.body.username;
+  db.query(
+    "INSERT INTO stock_material (stock_material_Id, stock_material_delete, stock_material_date, username, material_Id) VALUES(?,?,?,?,?)",
+    [stock_material_Id, stock_material_delete, stock_material_date, username, material_Id],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -205,6 +271,7 @@ app.post('/order_material', (req, res) => {
   const order_material_date = req.body.order_material_date;
   const username = req.body.username;
   const material_Id = req.body.material_Id;
+  const material_name = req.body.material_name
   db.query(
     "INSERT INTO order_material (order_material_Id, order_material_quantity, order_material_date, username, material_Id) VALUES(?,?,?,?,?)",
     [order_material_Id, order_material_quantity, order_material_date, username, material_Id],
@@ -213,6 +280,25 @@ app.post('/order_material', (req, res) => {
         console.log(err);
       } else {
         res.send("Values inserted");
+      }
+    });
+    request.post({
+      url: 'https://notify-api.line.me/api/notify',
+      headers: {
+          'Authorization': 'Bearer ' + linetoken
+      },
+      form: {
+        message: `${ username} มีคำร้องขอเบิกวัสดุใหม่!
+ชื่อวัสดุ:${material_name}
+รหัสวัสดุ:${material_Id}
+จำนวน:${order_material_quantity}`
+
+      }
+    }, (err, httpResponse, body) => {
+      if (err) {
+          console.error(err);
+      } else {
+          console.log(body);
       }
     });
 });
@@ -291,6 +377,7 @@ app.post('/order_durablearticles', (req, res) => {
   const order_durablearticles_date = req.body.order_durablearticles_date;
   const username = req.body.username;
   const durablearticles_Id = req.body.durablearticles_Id;
+  const durablearticles_name=req.body.durablearticles_name;
   db.query(
     "INSERT INTO order_durablearticles (order_durablearticles_Id, order_durablearticles_location, order_durablearticles_date, username, durablearticles_Id) VALUES(?,?,?,?,?)",
     [order_durablearticles_Id, order_durablearticles_location, order_durablearticles_date, username, durablearticles_Id],
@@ -299,6 +386,24 @@ app.post('/order_durablearticles', (req, res) => {
         console.log(err);
       } else {
         res.send("Values inserted");
+      }
+    });
+    request.post({
+      url: 'https://notify-api.line.me/api/notify',
+      headers: {
+          'Authorization': 'Bearer ' + linetoken
+      },
+      form: {
+        message: `${ username} มีคำร้องขอเบิกครุภัณฑ์ใหม่!
+ชื่อครุภัณฑ์:${durablearticles_name}
+รหัสครุภัณฑ์:${durablearticles_Id}
+ยืมไปใช้ที่:${order_durablearticles_location}`
+      }
+    }, (err, httpResponse, body) => {
+      if (err) {
+          console.error(err);
+      } else {
+          console.log(body);
       }
     });
 });
@@ -377,9 +482,10 @@ app.post('/return_durablearticles', (req, res) => {
   const return_durablearticles_date = req.body.return_durablearticles_date;
   const username = req.body.username;
   const order_durablearticles_Id = req.body.order_durablearticles_Id;
+  const return_durablearticles_detail = req.body.return_durablearticles_detail;
   db.query(
-    "INSERT INTO return_durablearticles (return_durablearticles_Id, return_durablearticles_status, return_durablearticles_date, username, order_durablearticles_Id) VALUES(?,?,?,?,?)",
-    [return_durablearticles_Id, return_durablearticles_status, return_durablearticles_date, username, order_durablearticles_Id],
+    "INSERT INTO return_durablearticles (return_durablearticles_Id, return_durablearticles_status, return_durablearticles_date, username, order_durablearticles_Id, return_durablearticles_detail) VALUES(?,?,?,?,?,?)",
+    [return_durablearticles_Id, return_durablearticles_status, return_durablearticles_date, username, order_durablearticles_Id, return_durablearticles_detail],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -420,6 +526,16 @@ app.get("/durablearticles", (req, res) => {
   });
 });
 
+app.get("/durablearticlesrepair", (req, res) => {
+  db.query("SELECT * FROM durablearticles INNER JOIN repair_durablearticles ON durablearticles.durablearticles_Id = repair_durablearticles.durablearticles_Id", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
+
 app.post('/createdurablearticles', (req, res) => {
   const durablearticles_Id = req.body.durablearticles_Id;
   const durablearticles_name = req.body.durablearticles_name;
@@ -428,15 +544,13 @@ app.post('/createdurablearticles', (req, res) => {
   const durablearticles_price = req.body.durablearticles_price;
   const durablearticles_order_date = req.body.durablearticles_order_date;
   const durablearticles_delivery_date = req.body.durablearticles_delivery_date;
-  const durablearticles_repair_date = req.body.durablearticles_repair_date;
-  const durablearticles_finish_date = req.body.durablearticles_finish_date;
   const type_durablearticles_Id = req.body.type_durablearticles_Id;
   const company_Id = req.body.company_Id;
   const room_Id = req.body.room_Id;
   const durablearticles_status = req.body.durablearticles_status;
   db.query(
-    "INSERT INTO durablearticles (durablearticles_Id, durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, durablearticles_repair_date, durablearticles_finish_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-    [durablearticles_Id, durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, durablearticles_repair_date, durablearticles_finish_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status],
+    "INSERT INTO durablearticles (durablearticles_Id, durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+    [durablearticles_Id, durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -454,15 +568,13 @@ app.put('/updatedurablearticles/:durablearticles_Id', (req, res) => {
   const durablearticles_price = req.body.durablearticles_price;
   const durablearticles_order_date = req.body.durablearticles_order_date;
   const durablearticles_delivery_date = req.body.durablearticles_delivery_date;
-  const durablearticles_repair_date = req.body.durablearticles_repair_date;
-  const durablearticles_finish_date = req.body.durablearticles_finish_date;
   const type_durablearticles_Id = req.body.type_durablearticles_Id;
   const company_Id = req.body.company_Id;
   const room_Id = req.body.room_Id;
   const durablearticles_status = req.body.durablearticles_status;
   db.query(
-    "UPDATE durablearticles SET durablearticles_name = ?, durablearticles_brand = ?, durablearticles_unit = ?, durablearticles_price = ?, durablearticles_order_date = ?, durablearticles_delivery_date = ?, durablearticles_repair_date = ?, durablearticles_finish_date = ?, type_durablearticles_Id = ?, company_Id = ?, room_Id = ?, durablearticles_status = ? WHERE durablearticles_Id = ?",
-    [durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, durablearticles_repair_date, durablearticles_finish_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status, durablearticles_Id],
+    "UPDATE durablearticles SET durablearticles_name = ?, durablearticles_brand = ?, durablearticles_unit = ?, durablearticles_price = ?, durablearticles_order_date = ?, durablearticles_delivery_date = ?, type_durablearticles_Id = ?, company_Id = ?, room_Id = ?, durablearticles_status = ? WHERE durablearticles_Id = ?",
+    [durablearticles_name, durablearticles_brand, durablearticles_unit, durablearticles_price, durablearticles_order_date, durablearticles_delivery_date, type_durablearticles_Id, company_Id, room_Id, durablearticles_status, durablearticles_Id],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -485,9 +597,10 @@ app.delete("/deletedurablearticles/:durablearticles_Id", (req, res) => {
 
 app.get("/getdurablearticles/:durablearticles_Id", (req, res) => {
   const durablearticles_Id = req.params.durablearticles_Id;
-  db.query("SELECT * FROM durablearticles WHERE durablearticles_Id = ?", durablearticles_Id, (err, result) => {
+  db.query("SELECT * FROM durablearticles INNER JOIN type_durablearticles ON durablearticles.type_durablearticles_Id = type_durablearticles.type_durablearticles_Id INNER JOIN company ON durablearticles.company_Id = company.company_Id WHERE durablearticles.durablearticles_Id = ?", durablearticles_Id, (err, result) => {
     if (err) {
       console.log(err);
+      res.status(500).send(err);
     } else {
       res.send(result);
     }
@@ -543,19 +656,21 @@ app.get("/repair/:repair_durablearticles_Id", (req, res) => {
 });
 
 app.put('/repair/:repair_durablearticles_Id', (req, res) => {
-  const repair_durablearticles_Id = req.body.repair_durablearticles_Id;
+  const repair_durablearticles_Id = req.params.repair_durablearticles_Id;
   const repair_status = req.body.repair_status;
   db.query(
-    "UPDATE repair_durablearticles SET repair_status = ? WHERE repair_durablearticles_Id = ?",
+    "UPDATE repair_durablearticles SET repair_status = ? WHERE durablearticles_Id = (SELECT durablearticles_Id FROM repair_durablearticles WHERE repair_durablearticles_Id = ?)",
     [repair_status, repair_durablearticles_Id],
     (err, result) => {
       if (err) {
         console.log(err);
+        res.status(500).send("Internal Server Error");
       } else {
         res.send(result);
       }
     });
 });
+
 
 //login
 const scopes = 'personel,student,templecturer'; // <----- Scopes for search account type
@@ -670,7 +785,7 @@ const upload = multer({storage: storage});
 app.post('/upload', upload.single('photo'), function(req, res, next) {
   const file = req.file;
   const localTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });
-  const { durablearticles_Id, room, repair_detail, Informer } = JSON.parse(req.body.data);
+  const { durablearticles_Id,du_name, room, repair_detail, Informer,typename } = JSON.parse(req.body.data);
 
   const repair_status = "รอดำเนินการ";
   const repair_durablearticles_date = localTime;
@@ -687,14 +802,76 @@ app.post('/upload', upload.single('photo'), function(req, res, next) {
     error.httpStatusCode = 400;
     return next(error);
   }
+  request.post({
+    url: 'https://notify-api.line.me/api/notify',
+    headers: {
+        'Authorization': 'Bearer ' + linetoken
+    },
+    form: {
+        message: `${Informer} บันทึกการซ่อมใหม่!
+ชื่อครุภัณฑ์:${du_name}
+รหัสครุภัณฑ์:${durablearticles_Id}
+ห้อง:${room}
+ประเภท:${typename}
+รายละเอียดเพิ่มเติม:${repair_detail}`
+    }
+  }, (err, httpResponse, body) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log(body);
+    }
+  });
+});
+
+app.post('/addadmin', (req, res) => {
+  const admin_Id = req.body.admin_Id;
+  const admin_name = req.body.admin_name;
+  db.query(
+    "INSERT INTO account (Id , name) VALUES(?,?)",
+    [admin_Id, admin_name],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Values inserted");
+      }
+    });
+});
+
+app.get("/getadmin", (req, res) => {
+  db.query("SELECT * FROM account", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+})
+
+app.delete('/deleteadmin/:id', (req, res) => {
+  const id = req.params.id;
+  const query = `DELETE FROM account WHERE Id =${id}`
+  db.query(query, (err, result) => {
+      if (err) {
+          console.log(err);
+          res.status(500).send('Error deleting admin');
+      } else {
+          res.send('Admin deleted successfully');
+      }
+  });
 });
 
 
-
-
-
-
-
+app.get("/type_durablearticles", (req, res) => {
+  db.query(`SELECT * FROM type_durablearticles`, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+})
 
 
 

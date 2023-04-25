@@ -53,11 +53,7 @@ const Dshow2 = () => {
                     <br />
 
                     <div className="field">
-                        <label className="label">เลขออเดอร์การแจ้ง : {repair_durablearticles_Id}</label>
-                    </div>
-
-                    <div className="field">
-                        <label className="label">เลขวัสดุ : {durablearticles_Id}</label>
+                        <label className="label">เลขครุภัณฑ์ : {durablearticles_Id}</label>
                     </div>
 
                     <div className="field">
@@ -68,7 +64,7 @@ const Dshow2 = () => {
                                     value={repair_status}
                                     onChange={(e) => setRepair_status(e.target.value)}
                                 >
-                                    <option value="">เลือก</option>
+                                    <option value="">-- เลือก --</option>
                                     <option value="จำหน่าย">จำหน่าย</option>
                                     <option value="เสร็จสิ้น">เสร็จสิ้น</option>
                                 </select>

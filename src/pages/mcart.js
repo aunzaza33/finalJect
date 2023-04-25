@@ -22,24 +22,15 @@ const Mcart = () => {
   const [type_material_Id, setType_material_Id] = useState("");
   const [company_Id, setCompany_Id] = useState("");
 
-
-
   const navigate = useNavigate();
   const { material_Id } = useParams();
-
 
   const getMaterialById = async () => {
     const response = await Axios.get(`http://localhost:3001/getmaterial/${material_Id}`);
     console.log(response);
     setMaterial_name(response.data[0].material_name);
-    setMaterial_brand(response.data[0].material_brand);
     setMaterial_unit(response.data[0].material_unit);
-    setMaterial_price(response.data[0].material_price);
     setMaterial_remaining(response.data[0].material_remaining);
-    setMaterial_order_date(response.data[0].material_order_date);
-    setMaterial_delivery_date(response.data[0].material_delivery_date);
-    setType_material_Id(response.data[0].type_material_Id);
-    setCompany_Id(response.data[0].company_Id);
   };
 
   const remainingStock = material_remaining - order_material_quantity;
@@ -57,6 +48,7 @@ const Mcart = () => {
         order_material_date,
         username,
         material_Id,
+        material_name,
       });
       await Axios.put(`http://localhost:3001/stockmaterial/${material_Id}`, {
         material_Id,
@@ -68,6 +60,14 @@ const Mcart = () => {
       console.log(error);
     }
   };
+
+  new Date(order_material_date).toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+  const Dates = new Date(order_material_date);
+  const DateStr = `${Dates.getDate()}/${Dates.getMonth()+1}/${Dates.getFullYear()}`;
 
   return (
     <div className="Appcontainer">
@@ -103,10 +103,9 @@ const Mcart = () => {
           <div className="field1">
             <label className="label">วันที่เบิก :</label>
             <div className="control">
-              <input
-                type="date"
+            <input
                 className="input"
-                value={order_material_date}
+                value={DateStr}
                 onChange={(e) => setOrder_material_date(e.target.value)}
                 placeholder=""
               />

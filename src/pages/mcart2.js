@@ -9,8 +9,6 @@ const Mcart = () => {
   const [order_material_Id, setOrder_material_Id] = useState("");
   const [order_material_quantity, setOrder_material_quantity] = useState("");
   const [order_material_date, setOrder_material_date] = useState(new Date().toISOString().slice(0, 10));
-  //const displayname = sessionStorage.getItem('displayname');
-  //const username = displayname;
   const [username, setUsername] = useState("")
 
   const [material_name, setMaterial_name] = useState("");
@@ -22,8 +20,6 @@ const Mcart = () => {
   const [material_delivery_date, setMaterial_delivery_date] = useState("");
   const [type_material_Id, setType_material_Id] = useState("");
   const [company_Id, setCompany_Id] = useState("");
-
-
 
   const navigate = useNavigate();
   const { material_Id } = useParams();
@@ -58,6 +54,7 @@ const Mcart = () => {
         order_material_date,
         username,
         material_Id,
+        material_name,
       });
       await Axios.put(`http://localhost:3001/stockmaterial/${material_Id}`, {
         material_Id,
@@ -69,6 +66,15 @@ const Mcart = () => {
       console.log(error);
     }
   };
+
+  new Date(order_material_date).toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+  const Dates = new Date(order_material_date);
+  const DateStr = `${Dates.getDate()}/${Dates.getMonth() + 1}/${Dates.getFullYear()}`;
+
 
   return (
     <div className="Appcontainer">
@@ -105,9 +111,8 @@ const Mcart = () => {
             <label className="label">วันที่เบิก :</label>
             <div className="control">
               <input
-                type="date"
                 className="input"
-                value={order_material_date}
+                value={DateStr}
                 onChange={(e) => setOrder_material_date(e.target.value)}
                 placeholder=""
               />
@@ -116,15 +121,45 @@ const Mcart = () => {
           <div className="field1">
             <label className="label">ชื่อผู้เบิก :</label>
             <div className="control">
-              <input
-                type="text"
+              <select
                 className="input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder=""
-              />
+              >
+                <option value="">-- เลือกชื่อผู้เบิก --</option>
+                <option value="ฐิตินันท์ ขันทอง">ฐิตินันท์ ขันทอง</option>
+                <option value="อาลิษา หุ่นไทย">อาลิษา หุ่นไทย</option>
+                <option value="จันทิมา อรรฆรุจิรัตน์">จันทิมา อรรฆรุจิรัตน์</option>
+                <option value="เกรียงไกร เอี่ยมวงค์">เกรียงไกร เอี่ยมวงค์</option>
+                <option value="นที ปัญญาประสิทธิ์">นที ปัญญาประสิทธิ์</option>
+                <option value="อุษณีย์ บัลลังน้อย">อุษณีย์ บัลลังน้อย</option>
+                <option value="อัครา ประโยชน์">อัครา ประโยชน์</option>
+                <option value="ลือพล พิพานเมฆาภรณ์">ลือพล พิพานเมฆาภรณ์</option>
+                <option value="ธนภัทร์ อนุศาสน์อมรกุล">ธนภัทร์ อนุศาสน์อมรกุล</option>
+                <option value="ปรัชญาพร เลี้ยงสุทธิสกนธ์">ปรัชญาพร เลี้ยงสุทธิสกนธ์</option>
+                <option value="สุวัจชัย กมลสันติโรจน์">สุวัจชัย กมลสันติโรจน์</option>
+                <option value="คันธารัตน์ อเนกบุณย์">คันธารัตน์ อเนกบุณย์</option>
+                <option value="นิกร สุทธิเสงี่ยม">นิกร สุทธิเสงี่ยม</option>
+                <option value="นนทกร สถิตานนท์">นนทกร สถิตานนท์</option>
+                <option value="กฤดาภัทร สีหารี">กฤดาภัทร สีหารี</option>
+                <option value="กอบเกียรติ สระอุบล">กอบเกียรติ สระอุบล</option>
+                <option value="ปรวัฒน์ วิสูตรศักดิ์">ปรวัฒน์ วิสูตรศักดิ์</option>
+                <option value="เบญจพร ลิ้มธรรมาภรณ์">เบญจพร ลิ้มธรรมาภรณ์</option>
+                <option value="เฉียบวุฒิ รัตนวิไลสกุล">เฉียบวุฒิ รัตนวิไลสกุล</option>
+                <option value="สถิตย์ ประสมพันธ์">สถิตย์ ประสมพันธ์</option>
+                <option value="เอิญ สุริยะฉาย">เอิญ สุริยะฉาย</option>
+                <option value="ณัฐวุฒิ สร้อยดอกสน">ณัฐวุฒิ สร้อยดอกสน</option>
+                <option value="อนุสรณ์ วงษ์สนิท">อนุสรณ์ วงษ์สนิท</option>
+                <option value="ยนต์ชนก เขาแก้ว">ยนต์ชนก เขาแก้ว</option>
+                <option value="สรร รัตนสัญญา">สรร รัตนสัญญา</option>
+                <option value="ธรรศฏภณ สุระศักดิ์">ธรรศฏภณ สุระศักดิ์</option>
+                <option value="ณัฐกิตติ์ จิตรเอื้อตระกูล">ณัฐกิตติ์ จิตรเอื้อตระกูล</option>
+                <option value="อภิสิทธิ์ รัตนาตรานุรักษ์">อภิสิทธิ์ รัตนาตรานุรักษ์</option>
+                <option value="Admin">Admin</option>
+              </select>
             </div>
           </div>
+
 
           <br />
           <div className="field">

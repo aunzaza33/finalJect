@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './Signin.css';
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const accountType = sessionStorage.getItem('account_type');
+  const displayname = sessionStorage.getItem('displayname');
+  const [admin, setadmin] = useState([]);
+  useEffect(() => {
+    getadmin();
+  })
+  const getadmin = async () => {
+    const response = await axios.get('http://localhost:3001/getadmin');
+    setadmin(response.name);
+    console.log(admin)
+};
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (username === "admin" && password === "admin") {
+    if (username === "admin" && password === "admin" || accountType == "personel") {
       sessionStorage.setItem('displayname', "admin");
       sessionStorage.setItem('account_type', "personel");
+      //sessionStorage.setItem('preloading', true)
       window.location.href = '/home2';
+      //window.location.href = 'http://localhost'
+      // window.location.href = 'http://localhost:3001'
+      Swal.fire({
+        title: 'Login Success!',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
     }
     else {
       try {
@@ -37,7 +58,17 @@ function LoginForm() {
           timer: 2000,
           showConfirmButton: false
         });
-        window.location.href = '/'; // redirect to home page
+        
+      if(admin){
+        window.location.href = '/home2';
+      }
+        //sessionStorage.setItem('preloading', true)
+      else{
+        window.location.href = '/home'
+      }
+        ; // redirect to home page
+        //window.location.href = 'http://localhost'
+        // window.location.href = 'http://localhost:3001'
       } catch (error) {
         if (error.response) {
           setErrorMessage(error.response.data.message);
@@ -49,34 +80,39 @@ function LoginForm() {
   };
 
   return (
-    <div className='login'>
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="form-group">
-          <label>
-            Username:
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="form-control"
-            />
-          </label>
-        </div>
-        <div className="form-group">
-          <label>
-            Password :
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-control"
-            />
-          </label>
-        </div>
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
-        <button type="submit" className="btn btn-primary">Log in</button>
-      </form>
-      <br/><a>ระบบเบิกจ่ายวัสดุและครุภัณฑ์</a>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <img src={require(`../favicon.png`)} alt="image" width="200" height="200" />
+        <h5 style={{ margin: '20px 0' }}>- ระบบเบิกจ่ายวัสดุและครุภัณฑ์ -</h5>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>
+              Username:
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="form-control"
+                placeholder="username ของ ICIT"
+              />
+            </label>
+          </div>
+          <div className="form-group">
+            <label>
+              Password :
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-control"
+                placeholder="password ของ ICIT"
+              />
+            </label>
+          </div>
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
+          <button type="submit" className="btn btn-primary">Log in</button>
+        </form>
+      </div>
     </div>
   );
 }

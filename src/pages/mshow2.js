@@ -58,10 +58,6 @@ const Mshow2 = () => {
                     <br />
 
                     <div className="field">
-                        <label className="label">ลำดับ : {order_material_Id}</label>
-                    </div>
-
-                    <div className="field">
                         <label className="label">เลขวัสดุ : {material_Id}</label>
                     </div>
 

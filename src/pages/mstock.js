@@ -7,7 +7,7 @@ function Mstock() {
 
     const [stock_material_Id, setStock_material_Id] = useState("");
     const [stock_material_add, setStock_material_add] = useState("");
-    //const [stock_material_date, setStock_material_date] = useState("");
+    const [stock_material_date, setStock_material_date] = useState(new Date().toISOString().slice(0, 10));
     const displayname = sessionStorage.getItem('displayname');
     const username = displayname;
 
@@ -29,15 +29,7 @@ function Mstock() {
     const getMaterialById = async () => {
         const response = await Axios.get(`http://localhost:3001/getmaterial/${material_Id}`);
         console.log(response);
-        setMaterial_name(response.data[0].material_name);
-        setMaterial_brand(response.data[0].material_brand);
-        setMaterial_unit(response.data[0].material_unit);
-        setMaterial_price(response.data[0].material_price);
         setMaterial_remaining(response.data[0].material_remaining);
-        setMaterial_order_date(response.data[0].material_order_date);
-        setMaterial_delivery_date(response.data[0].material_delivery_date);
-        setType_material_Id(response.data[0].type_material_Id);
-        setCompany_Id(response.data[0].company_Id);
     };
 
     useEffect(() => {
@@ -64,9 +56,15 @@ function Mstock() {
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
-    const [stock_material_date, setStock_material_date] = useState(new Date().toISOString().slice(0, 10));
+    new Date(stock_material_date).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
+    const Dates = new Date(stock_material_date);
+    const DateStr = `${Dates.getDate()}/${Dates.getMonth()+1}/${Dates.getFullYear()}`;
 
     return (
         <div className="Appcontainer">
@@ -93,9 +91,8 @@ function Mstock() {
                         <label className="label">วันที่เพิ่มสต็อก :</label>
                         <div className="control">
                             <input
-                                type="date"
                                 className="input"
-                                value={stock_material_date}
+                                value={DateStr}
                                 onChange={(e) => setStock_material_date(e.target.value)}
                                 placeholder=""
                             />

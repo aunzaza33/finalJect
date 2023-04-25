@@ -22,11 +22,13 @@ function Durablearticlesshow() {
     const handleSearch = event => {
         setSearchTerm(event.target.value);
     }
-
+    //page
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    //search
     const currentItems = durablearticles.filter(val =>
         val.durablearticles_name.toLowerCase().includes(searchTerm.toLowerCase())
+        || val.durablearticles_Id.toString().toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(indexOfFirstItem, indexOfLastItem);
 
     const totalPages = Math.ceil(durablearticles.length / itemsPerPage);
@@ -47,17 +49,17 @@ function Durablearticlesshow() {
                         />
                     </div>
                 </div>
-                <table class="table">
+                <table className="table" style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
                     <thead>
                         <tr>
-                            <th scope="col">ลำดับ</th>
-                            <th scope="col">เลขครุภัณฑ์</th>
-                            <th scope="col">ชื่อ</th>
-                            <th scope="col">หน่วยนับ</th>
-                            <th scope="col">ราคา</th>
-                            <th scope="col">แก้ไข</th>
-                            <th scope="col">QR_Code</th>
-                            <th scope="col">รายละเอียด</th>
+                            <th scope="col" className="col-1">ลำดับ</th>
+                            <th scope="col" className="col-2">เลขครุภัณฑ์</th>
+                            <th scope="col" className="col-4">ชื่อ</th>
+                            <th scope="col" className="col-1">หน่วยนับ</th>
+                            <th scope="col" className="col-1">ราคา</th>
+                            <th scope="col" className="col-1">แก้ไข</th>
+                            <th scope="col" className="col-1">รายละเอียด</th>
+                            <th scope="col" className="col-1">QR_Code</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,20 +71,56 @@ function Durablearticlesshow() {
                                 <td>{val.durablearticles_unit}</td>
                                 <td>{val.durablearticles_price}</td>
                                 <td><Link to={`/durablearticlesedit/${val.durablearticles_Id}`} className="btn btn-warning">แก้ไข</Link></td>
-                                <td><Link to={`/qrcode/${val.durablearticles_Id}`} className="btn btn-success">สร้าง</Link></td>
                                 <td><Link to={`/ddetail/${val.durablearticles_Id}`} className="btn btn-primary">ดู</Link></td>
+                                <td><Link to={`/qrcode/${val.durablearticles_Id}`} className="btn btn-success">สร้าง</Link></td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                <nav>
+                <nav style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
                     <ul className="pagination">
-                        {[...Array(totalPages)].map((_, index) => (
-                            <li key={index} className={`page-item ${index + 1 === currentPage ? 'active' : ''}`}>
-                                <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
-                            </li>
-                        ))}
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button onClick={() => paginate(1)} className="page-link">หน้าแรก</button>
+                        </li>
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button onClick={() => paginate(currentPage - 1)} className="page-link">ก่อนหน้า</button>
+                        </li>
+                        {[...Array(totalPages)].map((_, index) => {
+                            if (index + 1 === currentPage) {
+                                return (
+                                    <li key={index} className="page-item active">
+                                        <button className="page-link">{index + 1}</button>
+                                    </li>
+                                );
+                            } else if (
+                                index + 1 >= currentPage - 9 &&
+                                index + 1 <= currentPage + 9 &&
+                                index + 1 !== totalPages
+                            ) {
+                                return (
+                                    <li key={index} className="page-item">
+                                        <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
+                                    </li>
+                                );
+                            } else if (index + 1 === currentPage - 10 || index + 1 === currentPage + 10) {
+                                return (
+                                    <li key={index} className="page-item disabled">
+                                        <button className="page-link">...</button>
+                                    </li>
+                                );
+                            } else if (index + 1 === totalPages) {
+                                return (
+                                    <li key={index} className="page-item">
+                                        <button onClick={() => paginate(totalPages)} className="page-link">{totalPages}</button>
+                                    </li>
+                                );
+                            }
+                            return null;
+                        })}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button onClick={() => paginate(currentPage + 1)} className="page-link">ถัดไป</button>
+                        </li>
                     </ul>
                 </nav>
             </div>

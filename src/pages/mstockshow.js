@@ -16,7 +16,7 @@ function Mstockshow() {
 
   const getStockm = async () => {
     const response = await Axios.get('http://localhost:3001/stock_material2');
-    setStockm(response.data);
+    setStockm(response.data.reverse());
   };
 
   const handleSearch = event => {
@@ -25,8 +25,10 @@ function Mstockshow() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
   const currentItems = stockm.filter(val =>
     val.material_name.toLowerCase().includes(searchTerm.toLowerCase())
+    || val.material_Id.toString().toLowerCase().includes(searchTerm.toLowerCase())
   ).slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(stockm.length / itemsPerPage);
@@ -48,15 +50,16 @@ function Mstockshow() {
           </div>
         </div>
 
-        <table class="table">
+        <table className="table" style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
           <thead>
             <tr>
-              <th scope="col">ลำดับ</th>
-              <th scope="col">เลขวัสดุ</th>
-              <th scope="col">ชื่อวัสดุ</th>
-              <th scope="col">จำนวนที่เพิ่ม</th>
-              <th scope="col">วันที่</th>
-              <th scope="col">ชื่อผู้เพิ่ม</th>
+              <th scope="col" className="col-1">ลำดับ</th>
+              <th scope="col" className="col-2">เลขวัสดุ</th>
+              <th scope="col" className="col-4">ชื่อวัสดุ</th>
+              <th scope="col" className="col-1">จำนวนที่เพิ่ม</th>
+              <th scope="col" className="col-1">จำนวนที่ลด</th>
+              <th scope="col" className="col-1">วันที่</th>
+              <th scope="col" className="col-1">ชื่อผู้เพิ่ม</th>
             </tr>
           </thead>
           <tbody>
@@ -65,20 +68,58 @@ function Mstockshow() {
                 <td>{index + 1 + (currentPage - 1) * itemsPerPage}</td>
                 <td>{val.material_Id}</td>
                 <td>{val.material_name}</td>
-                <td>{val.stock_material_add}</td>
-                <td>{(val.stock_material_date == null) ? "" : new Date(val.stock_material_date).toLocaleDateString('en-GB',{day: 'numeric', month: 'numeric', year: 'numeric'})}</td>
+                <td>{val.stock_material_add ? val.stock_material_add : "0"}</td>
+                <td>{val.stock_material_delete ? val.stock_material_delete : "0"}</td>
+                <td>{(val.stock_material_date == null) ? "" : new Date(val.stock_material_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric' })}</td>
                 <td>{val.username}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <nav>
+
+        <nav style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
           <ul className="pagination">
-            {[...Array(totalPages)].map((_, index) => (
-              <li key={index} className={`page-item ${index + 1 === currentPage ? 'active' : ''}`}>
-                <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
-              </li>
-            ))}
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(1)} className="page-link">หน้าแรก</button>
+            </li>
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(currentPage - 1)} className="page-link">ก่อนหน้า</button>
+            </li>
+            {[...Array(totalPages)].map((_, index) => {
+              if (index + 1 === currentPage) {
+                return (
+                  <li key={index} className="page-item active">
+                    <button className="page-link">{index + 1}</button>
+                  </li>
+                );
+              } else if (
+                index + 1 >= currentPage - 9 &&
+                index + 1 <= currentPage + 9 &&
+                index + 1 !== totalPages
+              ) {
+                return (
+                  <li key={index} className="page-item">
+                    <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
+                  </li>
+                );
+              } else if (index + 1 === currentPage - 10 || index + 1 === currentPage + 10) {
+                return (
+                  <li key={index} className="page-item disabled">
+                    <button className="page-link">...</button>
+                  </li>
+                );
+              } else if (index + 1 === totalPages) {
+                return (
+                  <li key={index} className="page-item">
+                    <button onClick={() => paginate(totalPages)} className="page-link">{totalPages}</button>
+                  </li>
+                );
+              }
+              return null;
+            })}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(currentPage + 1)} className="page-link">ถัดไป</button>
+            </li>
           </ul>
         </nav>
       </div>

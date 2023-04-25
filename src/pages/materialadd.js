@@ -17,7 +17,6 @@ function Materialadd() {
   const [material_order_date, setMaterial_order_date] = useState("");
   const [material_delivery_date, setMaterial_delivery_date] = useState("");
   const [type_material_Id, setType_material_Id] = useState("");
-  const [company_Id, setCompany_Id] = useState("");
 
   const navigate = useNavigate();
 
@@ -105,6 +104,39 @@ function Materialadd() {
       });
     }
   };
+
+  //comapny
+  const [company, setCompany] = useState([]);
+  const [company_Id, setCompany_Id] = useState("");
+
+  const getCompany = async () => {
+    const response = await Axios.get('http://localhost:3001/getcompany');
+    setCompany(response.data);
+  };
+
+  useEffect(() => {
+    getCompany();
+  }, []);
+
+  const date = new Date(material_order_date);
+  //const formattedDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+
+  const date2 = new Date(material_delivery_date);
+  //const formattedDate2 = date2.getDate() + '/' + (date2.getMonth() + 1) + '/' + date2.getFullYear();
+
+  const result = date.toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const result2 = date2.toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  
 
   return (
     <div className="Appcontainer">
@@ -195,11 +227,13 @@ function Materialadd() {
               <input
                 type="date"
                 className="input"
-                value={material_order_date}
+                value={result}
                 onChange={(e) => setMaterial_order_date(e.target.value)}
               />
             </div>
           </div>
+          <p>วันที่ซื้อ : {result}</p>
+
           <div className="field1">
             <label className="label">วันที่รับ :</label>
             <div className="control">
@@ -207,11 +241,12 @@ function Materialadd() {
                 type="date"
                 className="input"
                 min={(material_order_date !== "") ? material_order_date : material_delivery_date}
-                value={material_delivery_date}
+                value={result2}
                 onChange={(e) => setMaterial_delivery_date(e.target.value)}
               />
             </div>
           </div>
+          <p>วันที่รับ : {result2}</p>
           <div className="field1">
             <label className="label">ประเภทวัสดุ :</label>
             <div className="control">
@@ -220,27 +255,33 @@ function Materialadd() {
                   value={type_material_Id}
                   onChange={(e) => setType_material_Id(e.target.value)}
                 >
-                  <option value="">เลือกประเภทของวัสดุ</option>
-                  <option value="1">1.วัสดุสิ้นเปลืองสำนักงาน</option>
-                  <option value="2">2.วัสดุสิ้นเปลืองไฟฟ้าและวิทยุ</option>
-                  <option value="3">3.วัสดุสิ้นเปลืองคอมพิวเตอร์</option>
-                  <option value="4">4.วัสดุสิ้นเปลืองบ้านงานครัว</option>
+                  <option value="">-- เลือกประเภทของวัสดุ --</option>
+                  <option value="1">วัสดุสิ้นเปลืองสำนักงาน</option>
+                  <option value="2">วัสดุสิ้นเปลืองไฟฟ้าและวิทยุ</option>
+                  <option value="3">วัสดุสิ้นเปลืองคอมพิวเตอร์</option>
+                  <option value="4">วัสดุสิ้นเปลืองบ้านงานครัว</option>
                 </select>
               </div>
             </div>
           </div>
+
           <div className="field1">
             <label className="label">บริษัท :</label>
             <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={company_Id}
-                onChange={(e) => setCompany_Id(e.target.value)}
-                placeholder=""
-              />
+              <div className="select is-fullwidth">
+                <select
+                  value={company_Id}
+                  onChange={(e) => setCompany_Id(e.target.value)}
+                >
+                  <option value="">-- เลือกบริษัท --</option>
+                  {company.map(item => (
+                    <option key={item.company_Id} value={item.company_Id}>{item.company_name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
+          
 
           <br />
           <div className="field">
@@ -249,8 +290,8 @@ function Materialadd() {
             </button>
           </div>
         </form>
-      </div><br/>
-      
+      </div><br />
+
       <div className="field1">
         <label className="label" >อัพโหลด CSV:</label>
         <div className="control">

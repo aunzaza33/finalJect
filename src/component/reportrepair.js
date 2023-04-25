@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import './reportrepair.css';
+
 function Reportrepair() {
 
   const [orderm, setOrderm] = useState([]);
@@ -20,10 +21,6 @@ function Reportrepair() {
   const handleSearch = event => {
     setSearchTerm(event.target.value);
   }
-
-  const filtered = orderm.filter(val =>
-    val.durablearticles_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     
@@ -58,13 +55,20 @@ function Reportrepair() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((val, index) => (
+            {orderm.filter(val => val.durablearticles_name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map((val, index) => (
               <tr key={val.repair_durablearticles_Id}>
                 <td>{index + 1}</td>
                 <td>{val.durablearticles_Id}</td>
                 <td>{val.durablearticles_name}</td>
                 <td>{val.room}</td>
-                <td><img src={require(`../../server/Picture/${val.repair_img}`)}/></td>
+                <td>
+                  {val.repair_img ? (
+                    <img src={`http://localhost:3001/api/image/${val.repair_img}`} alt={val.durablearticles_name} style={{ width: 50, height: 50 }} />
+                  ) : (
+                    <p>No image available</p>
+                  )}
+                </td>
                 <td>{val.repair_detail}</td>
                 <td>{val.Informer}</td>
                 <td>{(val.repair_durablearticles_date == null) ? "" : new Date(val.repair_durablearticles_date).toLocaleDateString('en-GB',{day: 'numeric', month: 'numeric', year: 'numeric'})}</td>

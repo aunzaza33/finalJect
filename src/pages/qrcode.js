@@ -2,7 +2,7 @@ import './qrcode.css';
 import QRCode from 'react-qr-code';
 function Qrcode() {
   const path = window.location.pathname.match(/\d+(-\d+)*/)[0];
-  const text=`https://project-kmutnb.vercel.app/repair/`
+  const text=`http://localhost/repairS/`
   //download qr code
   const download=()=>{
     const svg = document.getElementById("QRCode");
@@ -21,7 +21,7 @@ function Qrcode() {
       ctx.textAlign="center"
       ctx.fillStyle="black"
       ctx.font="bold 24px sans-serif"
-      ctx.fillText(text,200,380)
+      ctx.fillText(path,200,380)
       
       const pngFile = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
@@ -38,11 +38,11 @@ function Qrcode() {
 
 
   return (
-    <div className="header">
-      <h1>QR Code Generator</h1>
+    <div className="header"><br></br>
+      <h1>QR Code Generator</h1><br></br>
       <div className='QRcode'>
-        <QRCode value={text+path} id="QRCode"/>
-        <h1 className='imgText'>Product:{path}</h1>
+        <QRCode value={text+path} id="QRCode"/><br></br><br></br>
+        <h1 className='imgText'>Product:{path}</h1><br></br>
       </div>
       
       

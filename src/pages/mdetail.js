@@ -15,6 +15,9 @@ function Mdetail() {
     const [material_delivery_date, setMaterial_delivery_date] = useState("");
     const [type_material_Id, setType_material_Id] = useState("");
     const [company_Id, setCompany_Id] = useState("");
+    const [type_material_name, setType_material_name] = useState("");
+    const [company_name, setCompany_name] = useState("");
+    const [material_status, setMaterial_status] = useState("");
 
     const navigate = useNavigate();
     const { material_Id } = useParams();
@@ -31,6 +34,9 @@ function Mdetail() {
         setMaterial_delivery_date(response.data[0].material_delivery_date);
         setType_material_Id(response.data[0].type_material_Id);
         setCompany_Id(response.data[0].company_Id);
+        setType_material_name(response.data[0].type_material_name);
+        setCompany_name(response.data[0].company_name);
+        setMaterial_status(response.data[0].material_status);
     };
 
     useEffect(() => {
@@ -67,20 +73,22 @@ function Mdetail() {
                         <label className="label">วันที่รับ : {(material_delivery_date == null) ? "" : new Date(material_delivery_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric' })}</label>
                     </div>
                     <div className="field1">
-                        <label className="label">ประเภทวัสดุ : {type_material_Id}</label>
+                        <label className="label">ประเภทวัสดุ : {type_material_name}</label>
                     </div>
-
                     <div className="field1">
-                        <label className="label">บริษัท : {company_Id}</label>
+                        <label className="label">บริษัท : {company_name}</label>
+                    </div>
+                    <div className="field1">
+                        <label className="label">สถานะ : {material_status ? material_status : "ยังไม่จำหน่าย"}</label>
                     </div>
 
                     <div>
                         {
                             (() => {
                                 try {
-                                    return <img src={require(`./img_material/${material_Id}.jpg`)} alt="image" width="200" height="200" />;
+                                    return <img src={require(`../../../../server/img_material/${material_Id}.jpg`)} alt="image" width="200" height="200" />;
                                 } catch (err) {
-                                    return <img src={require(`./img_material/no.jpg`)} alt="default image" width="200" height="200" />;
+                                    //return <img src={require(`../../../../server/img_material/no.jpg`)} alt="default image" width="200" height="200" />;
                                 }
                             })()
                         }

@@ -11,6 +11,7 @@ const Dreturn = () => {
     //const [return_durablearticles_date, setReturn_durablearticles_date] = useState("");
     const [return_durablearticles_date, setReturn_durablearticles_date] = useState(new Date().toISOString().slice(0, 10));
     const [username, setUsername] = useState("");
+    const [return_durablearticles_detail, setReturn_durablearticles_detail] = useState("");
 
     const [order_durablearticles_location, setOrder_durablearticles_location] = useState("");
     const [order_durablearticles_date, setOrder_durablearticles_date] = useState("");
@@ -30,7 +31,7 @@ const Dreturn = () => {
         setDurablearticles_Id(response.data[0].durablearticles_Id);
     };
 
-    const newstatus = 'เบิกได้';
+    const newstatus = 'ยืมได้';
 
     useEffect(() => {
         getOrderDurablearticlesById();
@@ -45,6 +46,7 @@ const Dreturn = () => {
                 return_durablearticles_date,
                 username,
                 order_durablearticles_Id,
+                return_durablearticles_detail,
             });
             await Axios.put(`http://localhost:3001/statusdurablearticles/${durablearticles_Id}`, {
                 durablearticles_Id,
@@ -56,15 +58,19 @@ const Dreturn = () => {
         }
     };
 
+    new Date(return_durablearticles_date).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
+    const Dates = new Date(return_durablearticles_date);
+    const DateStr = `${Dates.getDate()}/${Dates.getMonth()+1}/${Dates.getFullYear()}`;
+
     return (
         <div className="Appcontainer">
             <div className="add">
                 <form onSubmit={addreturn}>
                     <br />
-
-                    <div className="field1">
-                        <label className="label">เลขออเดอร์ครุภัณฑ์ : {order_durablearticles_Id}</label>
-                    </div>
 
                     <div className="field1">
                         <label className="label">เลขครุภัณฑ์ : {durablearticles_Id}</label>
@@ -87,14 +93,24 @@ const Dreturn = () => {
                             </div>
                         </div>
                     </div>
-
+                    <div className="field1">
+                        <label className="label">รายละเอียด :</label>
+                        <div className="control">
+                            <input
+                                type="text"
+                                className="input"
+                                value={return_durablearticles_detail}
+                                onChange={(e) => setReturn_durablearticles_detail(e.target.value)}
+                                placeholder=""
+                            />
+                        </div>
+                    </div>
                     <div className="field1">
                         <label className="label">วันที่คืน :</label>
                         <div className="control">
                             <input
-                                type="date"
                                 className="input"
-                                value={return_durablearticles_date}
+                                value={DateStr}
                                 onChange={(e) => setReturn_durablearticles_date(e.target.value)}
                                 placeholder=""
                             />

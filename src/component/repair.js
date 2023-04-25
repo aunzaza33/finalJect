@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Camera, { FACING_MODES, IMAGE_TYPES } from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
@@ -15,12 +15,14 @@ export default function Repair() {
   const [du_name, setDurablearticlesName] = useState("");
   const [typeId, setTypeDurablearticlesId] = useState("");
   const repair_durablearticles_Id = "";
-
+  const [showFileInput, setShowFileInput] = useState(true);
   const [dataUri, setDataUri] = useState(null);
+  const [camera, setCamera] = useState(null);
+  const fileInputRef = useRef(null);
+  const [stream, setStream] = useState(null);
+  const [typename, setTypename] = useState("");
 
-  function handleTakePhoto(dataUri) {
-    setDataUri(dataUri);
-  }
+
 
   useEffect(() => {
     async function getMaterial() {
@@ -38,8 +40,24 @@ export default function Repair() {
       }
     }
     getMaterial();
+    
   }, [durablearticles_Id]);
-
+  useEffect(() => {
+  async function gettype() {
+    try {
+      const response = await axios.get("http://localhost:3001/type_durablearticles");
+      const jsonData = response.data;
+      const foundtype = jsonData.find((data) => data.type_durablearticles_Id === typeId);
+      if (foundtype) {
+        setTypename(foundtype.type_durablearticles_name);
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+  gettype()
+})
   function dataURItoFile(dataURI, fileName) {
     const byteString = atob(dataURI.split(",")[1]);
     const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
@@ -53,7 +71,9 @@ export default function Repair() {
     file.name = fileName;
     return file;
   }
-
+  async function handle(event) {
+    event.preventDefault();
+  }
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -76,6 +96,15 @@ export default function Repair() {
       });
       return;
     }
+    if (!room) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Please set room',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      return;
+    }
 
     const data = {
       repair_durablearticles_Id,
@@ -85,6 +114,7 @@ export default function Repair() {
       description,
       Informer: informer,
       repair_detail: description,
+      typename,
     };
 
     const file = dataURItoFile(dataUri, 'photo.jpg');
@@ -126,14 +156,50 @@ export default function Repair() {
     }
   }
 
+  async function handleCamera() {
+    //try {
+      //const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      //setStream(stream);
+      //if (dataUri) {
+        //setDataUri("");
+        //setShowFileInput(true);
+      //} else {
+       // setCamera(true);
+       // setShowFileInput(false);
+     // }
+    //} catch (err) {
+      //console.error('Failed to access camera: ', err);
+      //alert('Failed to access camera. Please check your camera settings permission and try again.');
+   //}
+
+  }
+  
+  function handleTakePhoto(dataUri) {
+    setDataUri(dataUri);
+    setCamera(false);
+  }
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setDataUri(reader.result);
+    };
+  }
+  const handleRetake = () => {
+    setDataUri("");
+    setShowFileInput(true);
+    fileInputRef.current.value = "";
+  };
+  
   return (
     <div>
       <br></br>
-      <h2>แจ้งซ่อมครุภัณฑ์</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 className="topic">แจ้งซ่อมครุภัณฑ์</h2>
+      <form onSubmit={handle}>
         <label>ID:{durablearticles_Id}  </label>
         <label>ชื่อ:{du_name} </label>
-        <label>ประเภท:{typeId} </label>
+        <label>ประเภท:{typename} </label>
         <label>ห้อง:</label>
         <select name="room" value={room} onChange={handleInputChange}>
           <option value="select">select</option>
@@ -154,32 +220,53 @@ export default function Repair() {
                 <option value="78-615">78-615</option>
                 <option value="78-616">78-616</option>
                 <option value="78-617">78-617</option>
-                <option value="78-618">78-618</option>
+                <option value="78-618/1">78-618/1</option>
+                <option value="78-618/2">78-618/2</option>
                 <option value="78-619">78-619</option>
+                <option value="78-620">78-620</option>
         </select>
+        {dataUri && <img src={dataUri} alt="captured" />}
+        <button className="camera" onClick={dataUri ? handleRetake : handleCamera}>
+        {dataUri ? "Retake" : "Camera"}
+        </button>
+        {showFileInput && (
         <div>
-          {dataUri ? (
-            <img src={dataUri} alt="captured" />
-          ) : (
-            <Camera
-              onTakePhoto={handleTakePhoto}
-              idealFacingMode={FACING_MODES.ENVIRONMENT}
-              idealResolution={{ width: 200, height: 200 }}
-              imageType={IMAGE_TYPES.JPG}
-              imageCompression={0.97} // เพิ่ม property นี้เข้ามา
-            />
-          )}
+          <input type="file" name="image" accept="image/*" onChange={handleImageUpload} ref={fileInputRef} />
         </div>
-        <label>รายละเอียดเพิ่มเติม:</label>
-        <textarea onChange={handleInputChange} value={description} name="description" style={{ resize: "vertical", width: "80%", height: "7vh", maxHeight: "100%" }} />
+      )}
 
-       
+
+  
+        {camera && (
+          <Camera
+            onTakePhoto={handleTakePhoto}
+            idealFacingMode={FACING_MODES.ENVIRONMENT}
+            idealResolution={{ width: 200, height: 200 }}
+            imageType={IMAGE_TYPES.JPG}
+            imageCompression={0.97}
+          />
+        )}
+  
+        <label>รายละเอียดเพิ่มเติม:</label>
+        <textarea
+          onChange={handleInputChange}
+          value={description}
+          name="description"
+        ></textarea>
+        <br></br>
         <label>ผู้แจ้ง:</label>
-        <input type="text" onChange={handleInputChange} value={informer} name="Informer" />
-       
+        <input
+          type="text"
+          value={informer}
+          onChange={handleInputChange}
+          name="Informer"
+        />
+        <br></br>
         <button type="submit" className="submit" onClick={handleSubmit}>Submit</button>
       </form>
+      
     </div>
   )
+  
   
 }

@@ -25,7 +25,7 @@ const Dshow2 = () => {
         setOrder_durablearticles_status(response.data[0].order_durablearticles_status);
     };
 
-    const dstatus = "เบิกได้";
+    const dstatus = "ยืมได้";
 
     const updateorderd = async (e) => {
         e.preventDefault();
@@ -56,15 +56,11 @@ const Dshow2 = () => {
                 <form onSubmit={updateorderd}>
                     <br />
 
-                    <div className="field1">
-                        <label className="label">เลขออเดอร์วัสดุ : {order_durablearticles_Id}</label>
+                    <div className="field">
+                        <label className="label">เลขครุภัณฑ์ : {durablearticles_Id}</label>
                     </div>
 
-                    <div className="field1">
-                        <label className="label">เลขวัสดุ : {durablearticles_Id}</label>
-                    </div>
-
-                    <div className="field1">
+                    <div className="field">
                         <label className="label">จัดการ :</label>
                         <div className="control">
                             <div className="select is-fullwidth">

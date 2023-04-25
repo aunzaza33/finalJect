@@ -12,39 +12,15 @@ function Ddetail() {
     const [durablearticles_price, setDurablearticles_price] = useState("");
     const [durablearticles_order_date, setDurablearticles_order_date] = useState("");
     const [durablearticles_delivery_date, setDurablearticles_delivery_date] = useState("");
-    const [durablearticles_repair_date, setDurablearticles_repair_date] = useState("");
-    const [durablearticles_finish_date, setDurablearticles_finish_date] = useState("");
     const [type_durablearticles_Id, setType_durablearticles_Id] = useState("");
     const [company_Id, setCompany_Id] = useState("");
+    const [type_durablearticles_name, setType_durablearticles_name] = useState("");
+    const [company_name, setCompany_name] = useState("");
     const [room_Id, setRoom_Id] = useState("");
     const [durablearticles_status, setDurablearticles_status] = useState("");
 
     const navigate = useNavigate();
     const { durablearticles_Id } = useParams();
-
-    const updateDurablearticles = async (e) => {
-        e.preventDefault();
-        try {
-            await Axios.put(`http://localhost:3001/updatedurablearticles/${durablearticles_Id}`, {
-                durablearticles_Id,
-                durablearticles_name,
-                durablearticles_brand,
-                durablearticles_unit,
-                durablearticles_price,
-                durablearticles_order_date,
-                durablearticles_delivery_date,
-                durablearticles_repair_date,
-                durablearticles_finish_date,
-                type_durablearticles_Id,
-                company_Id,
-                room_Id,
-                durablearticles_status,
-            });
-            navigate("/durablearticlesshow");
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const getDurablearticlesById = async () => {
         const response = await Axios.get(`http://localhost:3001/getdurablearticles/${durablearticles_Id}`);
@@ -55,10 +31,10 @@ function Ddetail() {
         setDurablearticles_price(response.data[0].durablearticles_price);
         setDurablearticles_order_date(response.data[0].durablearticles_order_date);
         setDurablearticles_delivery_date(response.data[0].durablearticles_delivery_date);
-        setDurablearticles_repair_date(response.data[0].durablearticles_repair_date);
-        setDurablearticles_finish_date(response.data[0].durablearticles_finish_date);
         setType_durablearticles_Id(response.data[0].type_durablearticles_Id);
         setCompany_Id(response.data[0].company_Id);
+        setCompany_name(response.data[0].company_name);
+        setType_durablearticles_name(response.data[0].type_durablearticles_name);
         setRoom_Id(response.data[0].room_Id);
         setDurablearticles_status(response.data[0].durablearticles_status);
     };
@@ -94,16 +70,10 @@ function Ddetail() {
                         <label className="label">วันที่รับ : {(durablearticles_delivery_date == null) ? "" : new Date(durablearticles_delivery_date).toLocaleDateString('en-GB',{day: 'numeric', month: 'numeric', year: 'numeric'})}</label>
                     </div>
                     <div className="field1">
-                        <label className="label">วันที่ซ่อม : {(durablearticles_repair_date == null) ? "" : new Date(durablearticles_repair_date).toLocaleDateString('en-GB',{day: 'numeric', month: 'numeric', year: 'numeric'})}</label>
+                        <label className="label">ประเภทครุภัณฑ์ : {type_durablearticles_name}</label>
                     </div>
                     <div className="field1">
-                        <label className="label">วันที่ซ่อมเสร็จ : {(durablearticles_finish_date == null) ? "" : new Date(durablearticles_finish_date).toLocaleDateString('en-GB',{day: 'numeric', month: 'numeric', year: 'numeric'})}</label>
-                    </div>
-                    <div className="field1">
-                        <label className="label">ประเภทครุภัณฑ์ : {type_durablearticles_Id}</label>
-                    </div>
-                    <div className="field1">
-                        <label className="label">บริษัท : {company_Id}</label>
+                        <label className="label">บริษัท : {company_name}</label>
                     </div>
                     <div className="field1">
                         <label className="label">เลขห้อง : {room_Id}</label>
@@ -116,9 +86,9 @@ function Ddetail() {
                         {
                             (() => {
                                 try {
-                                    return <img src={require(`./img_durablearticles/${durablearticles_Id}.jpg`)} alt="image" width="200" height="200" />;
+                                    return <img src={require(`../../../../server/img_durablearticles/${durablearticles_Id}.jpg`)} alt="image" width="200" height="200" />;
                                 } catch (err) {
-                                    return <img src={require(`./img_durablearticles/no.jpg`)} alt="default image" width="200" height="200" />;
+                                    //return <img src={require(`../../../../server/img_durablearticles/no.jpg`)} alt="default image" width="200" height="200" />;
                                 }
                             })()
                         }

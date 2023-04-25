@@ -32,7 +32,7 @@ function Sidebardata() {
   
   if(!displayname){
     return (
-      <BrowserRouter>
+      <>
         <div class="sidenav1">
         <a class="navbar-brand" ><NavLink to="/"></NavLink></a>
           <a class="navbar-brand" ><NavLink to={`/repairS/${repairType}`}>แจ้งซ่อม</NavLink></a>
@@ -41,18 +41,18 @@ function Sidebardata() {
         </div>
         <div class="content1">
           <Routes>
-            <Route path='/' element={<Room />}></Route>
-            <Route path='/repairS/:type' element={<Repair />}></Route>
-            <Route path='/room' element={<Room />}></Route>
-            <Route path='/reportrepair' element={<Reportrepair />}></Route>
+            <Route exact path='/' element={<Room />}></Route>
+            <Route exact path='/repairS/:type' element={<Repair />}></Route>
+            <Route exact path='/room' element={<Room />}></Route>
+            <Route exact path='/reportrepair' element={<Reportrepair />}></Route>
           </Routes>
         </div>
-      </BrowserRouter>
+      </>
     )
   }
   else{
     return (
-      <BrowserRouter>
+      <>
         <div class="sidenav1">
           <a class="navbar-brand" ><NavLink to={`/repairS/${repairType}`}>แจ้งซ่อม</NavLink></a>
           <a class="navbar-brand" ><NavLink to="/room">แจ้งย้าย</NavLink></a>
@@ -61,12 +61,12 @@ function Sidebardata() {
         </div>
         <div class="content1">
           <Routes>
-            <Route path='/repairS/:type' element={<Repair />}></Route>
-            <Route path='/room' element={<Room />}></Route>
-            <Route path='/reportrepair' element={<Reportrepair />}></Route>
+            <Route exact path='/repairS/:type' element={<Repair />}></Route>
+            <Route exact path='/room' element={<Room />}></Route>
+            <Route exact path='/reportrepair' element={<Reportrepair />}></Route>
           </Routes>
         </div>
-      </BrowserRouter>
+      </>
     )
   }
   

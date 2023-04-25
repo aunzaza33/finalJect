@@ -100,7 +100,8 @@ export default function Room() {
                 <option value="78-615">78-615</option>
                 <option value="78-616">78-616</option>
                 <option value="78-617">78-617</option>
-                <option value="78-618">78-618</option>
+                <option value="78-618/1">78-618/1</option>
+                <option value="78-618/2">78-618/2</option>
                 <option value="78-619">78-619</option>
                 <option value="78-620">78-620</option>
               </select><br />

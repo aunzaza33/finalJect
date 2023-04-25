@@ -25,8 +25,10 @@ function Mstocklist() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
   const currentItems = material.filter(val =>
     val.material_name.toLowerCase().includes(searchTerm.toLowerCase())
+    || val.material_Id.toString().toLowerCase().includes(searchTerm.toLowerCase())
   ).slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(material.length / itemsPerPage);
@@ -36,7 +38,7 @@ function Mstocklist() {
   return (
     <div className="columns mt-5 is-centered">
       <div className="column is-half">
-      <div className="field">
+        <div className="field">
           <div className="control">
             <input
               className="input"
@@ -48,15 +50,16 @@ function Mstocklist() {
           </div>
         </div>
 
-        <table class="table">
+        <table className="table" style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
           <thead>
             <tr>
-              <th scope="col">ลำดับ</th>
-              <th scope="col">เลขวัสดุ</th>
-              <th scope="col">ชื่อ</th>
-              <th scope="col">คงเหลือ</th>
-              <th scope="col">หน่วยนับ</th>
-              <th scope="col">เพิ่มสต็อก</th>
+              <th scope="col" className="col-1">ลำดับ</th>
+              <th scope="col" className="col-2">เลขวัสดุ</th>
+              <th scope="col" className="col-4">ชื่อ</th>
+              <th scope="col" className="col-1">คงเหลือ</th>
+              <th scope="col" className="col-1">หน่วยนับ</th>
+              <th scope="col" className="col-1">เพิ่มสต็อก</th>
+              <th scope="col" className="col-1">ลดสต็อก</th>
             </tr>
           </thead>
           <tbody>
@@ -68,17 +71,55 @@ function Mstocklist() {
                 <td>{val.material_remaining}</td>
                 <td>{val.material_unit}</td>
                 <td><Link to={`/mstock/${val.material_Id}`} className="btn btn-primary">เพิ่ม</Link></td>
+                <td><Link to={`/mstock2/${val.material_Id}`} className="btn btn-danger">ลด</Link></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <nav>
+
+        <nav style={{ tableLayout: "fixed", width: "90%", margin: "0 auto" }}>
           <ul className="pagination">
-            {[...Array(totalPages)].map((_, index) => (
-              <li key={index} className={`page-item ${index + 1 === currentPage ? 'active' : ''}`}>
-                <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
-              </li>
-            ))}
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(1)} className="page-link">หน้าแรก</button>
+            </li>
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(currentPage - 1)} className="page-link">ก่อนหน้า</button>
+            </li>
+            {[...Array(totalPages)].map((_, index) => {
+              if (index + 1 === currentPage) {
+                return (
+                  <li key={index} className="page-item active">
+                    <button className="page-link">{index + 1}</button>
+                  </li>
+                );
+              } else if (
+                index + 1 >= currentPage - 9 &&
+                index + 1 <= currentPage + 9 &&
+                index + 1 !== totalPages
+              ) {
+                return (
+                  <li key={index} className="page-item">
+                    <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
+                  </li>
+                );
+              } else if (index + 1 === currentPage - 10 || index + 1 === currentPage + 10) {
+                return (
+                  <li key={index} className="page-item disabled">
+                    <button className="page-link">...</button>
+                  </li>
+                );
+              } else if (index + 1 === totalPages) {
+                return (
+                  <li key={index} className="page-item">
+                    <button onClick={() => paginate(totalPages)} className="page-link">{totalPages}</button>
+                  </li>
+                );
+              }
+              return null;
+            })}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button onClick={() => paginate(currentPage + 1)} className="page-link">ถัดไป</button>
+            </li>
           </ul>
         </nav>
       </div>

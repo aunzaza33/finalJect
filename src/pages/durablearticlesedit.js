@@ -11,8 +11,6 @@ function Durablearticlesedit() {
     const [durablearticles_price, setDurablearticles_price] = useState("");
     const [durablearticles_order_date, setDurablearticles_order_date] = useState("");
     const [durablearticles_delivery_date, setDurablearticles_delivery_date] = useState("");
-    const [durablearticles_repair_date, setDurablearticles_repair_date] = useState("");
-    const [durablearticles_finish_date, setDurablearticles_finish_date] = useState("");
     const [type_durablearticles_Id, setType_durablearticles_Id] = useState("");
     const [company_Id, setCompany_Id] = useState("");
     const [room_Id, setRoom_Id] = useState("");
@@ -32,8 +30,6 @@ function Durablearticlesedit() {
                 durablearticles_price,
                 durablearticles_order_date,
                 durablearticles_delivery_date,
-                durablearticles_repair_date,
-                durablearticles_finish_date,
                 type_durablearticles_Id,
                 company_Id,
                 room_Id,
@@ -54,8 +50,6 @@ function Durablearticlesedit() {
         setDurablearticles_price(response.data[0].durablearticles_price);
         setDurablearticles_order_date(response.data[0].durablearticles_order_date);
         setDurablearticles_delivery_date(response.data[0].durablearticles_delivery_date);
-        setDurablearticles_repair_date(response.data[0].durablearticles_repair_date);
-        setDurablearticles_finish_date(response.data[0].durablearticles_finish_date);
         setType_durablearticles_Id(response.data[0].type_durablearticles_Id);
         setCompany_Id(response.data[0].company_Id);
         setRoom_Id(response.data[0].room_Id);
@@ -65,6 +59,35 @@ function Durablearticlesedit() {
     useEffect(() => {
         getDurablearticlesById();
     }, []);
+
+    useEffect(() => {
+        getCompany();
+    }, []);
+
+    //comapny
+    const [company, setCompany] = useState([{}]);
+    const getCompany = async () => {
+        const response = await Axios.get('http://localhost:3001/getcompany');
+        setCompany(response.data);
+    };
+
+    const date = new Date(durablearticles_order_date);
+    //const formattedDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+
+    const date2 = new Date(durablearticles_delivery_date);
+    //const formattedDate2 = date2.getDate() + '/' + (date2.getMonth() + 1) + '/' + date2.getFullYear();
+
+    const result = date.toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    
+      const result2 = date2.toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
 
     return (
         <div className="Appcontainer">
@@ -84,7 +107,7 @@ function Durablearticlesedit() {
                         </div>
                     </div>
                     <div className="field1">
-                        <label className="label">ชื่อ :</label>
+                        <label className="label">ชื่อครุภัณฑ์ :</label>
                         <div className="control">
                             <input
                                 type="text"
@@ -140,44 +163,26 @@ function Durablearticlesedit() {
                             <input
                                 type="date"
                                 className="input"
-                                value={durablearticles_order_date}
+                                value={result}
                                 onChange={(e) => setDurablearticles_order_date(e.target.value)}
                             />
                         </div>
                     </div>
+                    <p>วันที่ซื้อ: {result}</p>
+
                     <div className="field1">
                         <label className="label">วันที่รับ :</label>
                         <div className="control">
                             <input
                                 type="date"
                                 className="input"
-                                value={durablearticles_delivery_date}
+                                min={(durablearticles_order_date !== "") ? durablearticles_order_date : durablearticles_delivery_date}
+                                value={result2}
                                 onChange={(e) => setDurablearticles_delivery_date(e.target.value)}
                             />
                         </div>
                     </div>
-                    <div className="field1">
-                        <label className="label">วันที่ซ่อม :</label>
-                        <div className="control">
-                            <input
-                                type="date"
-                                className="input"
-                                value={durablearticles_repair_date}
-                                onChange={(e) => setDurablearticles_repair_date(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <div className="field1">
-                        <label className="label">วันที่ซ่อมเสร็จ :</label>
-                        <div className="control">
-                            <input
-                                type="date"
-                                className="input"
-                                value={durablearticles_finish_date}
-                                onChange={(e) => setDurablearticles_finish_date(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    <p>วันที่รับ: {result2}</p>
                     <div className="field1">
                         <label className="label">ประเภทครุภัณฑ์ :</label>
                         <div className="control">
@@ -186,13 +191,13 @@ function Durablearticlesedit() {
                                     value={type_durablearticles_Id}
                                     onChange={(e) => setType_durablearticles_Id(e.target.value)}
                                 >
-                                    <option value="">เลือกประเภทของครุภัณฑ์</option>
-                                    <option value="12060100">1.ครุภัณฑ์สำนักงาน</option>
-                                    <option value="12060300">2.ครุภัณฑ์ไฟฟ้าและวิทยุ</option>
-                                    <option value="12060400">3.ครุภัณฑ์โฆษณาและเผยแพร่</option>
-                                    <option value="12060800">4.ครุภัณฑ์สำรวจ</option>
-                                    <option value="12061000">5.ครุภัณฑ์คอมพิวเตอร์</option>
-                                    <option value="12061100">6.ครุภัณฑ์การศึกษา</option>
+                                    <option value="">-- เลือกประเภทของครุภัณฑ์ --</option>
+                                    <option value="12060100">ครุภัณฑ์สำนักงาน</option>
+                                    <option value="12060300">ครุภัณฑ์ไฟฟ้าและวิทยุ</option>
+                                    <option value="12060400">ครุภัณฑ์โฆษณาและเผยแพร่</option>
+                                    <option value="12060800">ครุภัณฑ์สำรวจ</option>
+                                    <option value="12061000">ครุภัณฑ์คอมพิวเตอร์</option>
+                                    <option value="12061100">ครุภัณฑ์การศึกษา</option>
                                 </select>
                             </div>
                         </div>
@@ -200,13 +205,17 @@ function Durablearticlesedit() {
                     <div className="field1">
                         <label className="label">บริษัท :</label>
                         <div className="control">
-                            <input
-                                type="text"
-                                className="input"
-                                value={company_Id}
-                                onChange={(e) => setCompany_Id(e.target.value)}
-                                placeholder=""
-                            />
+                            <div className="select is-fullwidth">
+                                <select
+                                    value={company_Id}
+                                    onChange={(e) => setCompany_Id(e.target.value)}
+                                >
+                                    <option value="">-- เลือกบริษัท --</option>
+                                    {company.map(item => (
+                                        <option key={item.company_Id} value={item.company_Id}>{item.company_name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div className="field1">
@@ -217,7 +226,7 @@ function Durablearticlesedit() {
                                     value={room_Id}
                                     onChange={(e) => setRoom_Id(e.target.value)}
                                 >
-                                    <option value="">เลือกห้อง</option>
+                                    <option value="">-- เลือกห้อง --</option>
                                     <option value="78-601">78-601</option>
                                     <option value="78-602">78-602</option>
                                     <option value="78-603">78-603</option>
@@ -244,16 +253,16 @@ function Durablearticlesedit() {
                         </div>
                     </div>
                     <div className="field1">
-                        <label className="label">สถานะการเบิก :</label>
+                        <label className="label">สถานะการยืม:</label>
                         <div className="control">
                             <div className="select is-fullwidth">
                                 <select
                                     value={durablearticles_status}
                                     onChange={(e) => setDurablearticles_status(e.target.value)}
                                 >
-                                    <option value="">เลือกสถานะเบิก</option>
-                                    <option value="เบิกได้">เบิกได้</option>
-                                    <option value="เบิกไม่ได้">เบิกไม่ได้</option>
+                                    <option value="">-- เลือกสถานะการยืม --</option>
+                                    <option value="ยืมได้">ยืมได้</option>
+                                    <option value="ยืมไม่ได้">ยืมไม่ได้</option>
                                 </select>
                             </div>
                         </div>
